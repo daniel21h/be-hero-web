@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { FiPower, FiTrash2 } from 'react-icons/fi'
 
@@ -15,14 +15,18 @@ export default function Profile() {
     const ongId = localStorage.getItem('ongId')
     const ongName = localStorage.getItem('ongName')
 
-    useEffect(() => {
-        api.get('profile', {
-            headers: {
-                Authorization: ongId,
-            }
-        }).then(response => {
+    useMemo(() => {
+        async function loadApi() {
+            const response = await api.get('profile', {
+                headers: {
+                    Authorization: ongId,
+                }
+            })
+
             setIncidents(response.data)
-        })
+        }
+
+        loadApi()
     }, [ongId])
 
     async function handleDeleteIncident(id) {
@@ -67,14 +71,14 @@ export default function Profile() {
                         <strong>CASO:</strong>
                         <p>{incident.title}</p>
 
-                        <strong>DESCRIÇAO:</strong>
+                        <strong>DESCRIÇÃO:</strong>
                         <p>{incident.description}</p>
 
                         <strong>VALOR:</strong>
                         <p>{Intl.NumberFormat(
                             'pt-br', {
                                 style: 'currency', 
-                                currency: 'BRL '
+                                currency: 'BRL'
                             })
                             .format(incident.value)}
                         </p>
